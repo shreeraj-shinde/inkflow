@@ -9,7 +9,10 @@ module.exports.register = async (req, res, next) => {
   }
 
   const { fullname, email, password } = req.body;
-
+  const isExistingUser = await userModel.findOne({ email });
+  if (isExistingUser) {
+    return res.status(400).json({ message: "User already exists" });
+  }
   const hashedPassword = await userModel.hashPassword(password);
   const user = await userService.createUser({
     firstname: fullname.firstname,
@@ -37,7 +40,7 @@ module.exports.loginUser = async (req, res, next) => {
     return res.status(401).json({ message: "Invalid Email or Password" });
   }
   const token = user.generateToken();
-  res.cookie("token", token);
+  res.cookie("token", token, { httpOnly: true });
   return res.status(200).json({ user, token });
 };
 

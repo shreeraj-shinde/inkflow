@@ -45,7 +45,9 @@ userSchema.methods.generateToken = function () {
   const token = jwt.sign(
     { id: this._id, role: this.role },
     process.env.JWT_SECRET,
-    (expiresIn = "1d")
+    {
+      expiresIn: "1d",
+    }
   );
   return token;
 };
